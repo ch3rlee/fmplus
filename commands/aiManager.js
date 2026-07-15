@@ -124,22 +124,19 @@ async function generateReply(client, userId, userContent) {
     // Append current message
     messages.push({ role: "user", content: userContent });
 
-    let modelName = "moonshotai/kimi-k2.6";
-    let temp = 1.00;
+    let modelName = "nvidia/nemotron-3-super-120b-a12b";
+    let temp = 1;
     let maxTokens = 16384;
-    let topP = 1.00;
+    let topP = 0.95;
     let extraParams = {
-        chat_template_kwargs: { thinking: true }
+        reasoning_budget: 16384,
+        chat_template_kwargs: { enable_thinking: true }
     };
 
     if (config.modelType === "fast") {
-        modelName = "qwen/qwen3.5-397b-a17b";
-        temp = 0.70;
-        topP = 0.80;
+        temp = 1;
+        topP = 0.95;
         extraParams = {
-            top_k: 20,
-            presence_penalty: 0,
-            repetition_penalty: 1,
             chat_template_kwargs: { enable_thinking: false }
         };
     }
