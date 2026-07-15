@@ -444,14 +444,40 @@
                         <input type="hidden" id="selectedGame" value="none">
                         <div class="platform-grid">
                             <div class="platform-btn" id="btnMinecraft" onclick="selectGame('minecraft', true)">
-                                <img src="https://cdn.discordapp.com/app-icons/1402418491272986635/166fbad351ecdd02d11a3b464748f66b.png?size=240&keep_aspect_ratio=false"
-                                    alt="MC" style="border-radius: 4px;">
+                                <img src="https://cdn.discordapp.com/app-icons/1402418491272986635/166fbad351ecdd02d11a3b464748f66b.png?size=240&keep_aspect_ratio=false" alt="MC" style="border-radius: 4px;">
                                 Minecraft
                             </div>
                             <div class="platform-btn" id="btnGenshin" onclick="selectGame('genshin', true)">
-                                <img src="https://cdn.discordapp.com/app-icons/762434991303950386/eb0e25b739e4fa38c1671a3d1edcd1e0.png?size=240&keep_aspect_ratio=false"
-                                    alt="GI" style="border-radius: 4px;">
+                                <img src="https://cdn.discordapp.com/app-icons/762434991303950386/eb0e25b739e4fa38c1671a3d1edcd1e0.png?size=240&keep_aspect_ratio=false" alt="GI" style="border-radius: 4px;">
                                 Genshin Impact
+                            </div>
+                            <div class="platform-btn" id="btnWutheringWaves" onclick="selectGame('wuthering_waves', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1247227126416146462/c7bb04bdddaa82cf045b02df7168365e.png?size=240&keep_aspect_ratio=false" alt="WW" style="border-radius: 4px;">
+                                Wuthering Waves
+                            </div>
+                            <div class="platform-btn" id="btnForzaHorizon5" onclick="selectGame('forza_horizon_5', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/905961880789590076/229e83c3817d45ecabdaa2f343eadd34.png?size=240&keep_aspect_ratio=false" alt="FH5" style="border-radius: 4px;">
+                                Forza Horizon 5
+                            </div>
+                            <div class="platform-btn" id="btnArknightsEndfield" onclick="selectGame('arknights_endfield', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1461154307171811401/a1c43f46f274856e6fb9edc8afda149d.png?size=240&keep_aspect_ratio=false" alt="AE" style="border-radius: 4px;">
+                                Arknights:Endfield
+                            </div>
+                            <div class="platform-btn" id="btnValorant" onclick="selectGame('valorant', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/700136079562375258/e55fc8259df1548328f977d302779ab7.png?size=240&keep_aspect_ratio=false" alt="VAL" style="border-radius: 4px;">
+                                Valorant
+                            </div>
+                            <div class="platform-btn" id="btnGta5" onclick="selectGame('gta5', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1402418714716143646/b77111108195cd5e4dd2011dd39bf67d.png?size=240&keep_aspect_ratio=false" alt="GTA5" style="border-radius: 4px;">
+                                GTA5
+                            </div>
+                            <div class="platform-btn" id="btnVrchat" onclick="selectGame('vrchat', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/398632010442211348/5881acfa9405ee69158591ec1a791c74.png?size=240&keep_aspect_ratio=false" alt="VRC" style="border-radius: 4px;">
+                                VRChat
+                            </div>
+                            <div class="platform-btn" id="btnCs2" onclick="selectGame('cs2', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1158877933042143272/558f5a26ecb3b17c3dea3d15c1df537a.png?size=80&keep_aspect_ratio=false" alt="CS2" style="border-radius: 4px;">
+                                Counter-Strike 2
                             </div>
                         </div>
                     </div>
@@ -778,11 +804,28 @@
             
             function selectGame(game, autoSave = false) {
                 document.getElementById('selectedGame').value = game;
-                document.getElementById('btnMinecraft').classList.remove('active');
-                document.getElementById('btnGenshin').classList.remove('active');
                 
-                if (game === 'minecraft') document.getElementById('btnMinecraft').classList.add('active');
-                if (game === 'genshin') document.getElementById('btnGenshin').classList.add('active');
+                // Clear active from all game buttons
+                document.querySelectorAll('#gameSpoofOptionContainer .platform-btn').forEach(btn => btn.classList.remove('active'));
+                
+                // We construct the expected ID based on camel case or just rely on a mapping
+                const gameToIdMap = {
+                    'minecraft': 'btnMinecraft',
+                    'genshin': 'btnGenshin',
+                    'wuthering_waves': 'btnWutheringWaves',
+                    'forza_horizon_5': 'btnForzaHorizon5',
+                    'arknights_endfield': 'btnArknightsEndfield',
+                    'valorant': 'btnValorant',
+                    'gta5': 'btnGta5',
+                    'vrchat': 'btnVrchat',
+                    'cs2': 'btnCs2'
+                };
+                
+                const activeBtnId = gameToIdMap[game];
+                if (activeBtnId) {
+                    const btn = document.getElementById(activeBtnId);
+                    if (btn) btn.classList.add('active');
+                }
                 
                 if (autoSave) saveRpc(null, true);
             }

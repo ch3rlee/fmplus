@@ -143,14 +143,23 @@ async function setPresence(client, data) {
                 rpcActivity.type = 'PLAYING';
                 rpcActivity.timestamps = { start: data.epochGameTimestamp || Date.now() };
 
-                if (data.selectedGame === 'minecraft') {
-                    rpcActivity.application_id = '1402418491272986635';
-                    rpcActivity.name = 'Minecraft';
-                    rpcActivity.assets.large_image = 'https://cdn.discordapp.com/app-icons/1402418491272986635/166fbad351ecdd02d11a3b464748f66b.png?size=240&keep_aspect_ratio=false';
-                } else if (data.selectedGame === 'genshin') {
-                    rpcActivity.application_id = '762434991303950386';
-                    rpcActivity.name = 'Genshin Impact';
-                    rpcActivity.assets.large_image = 'https://cdn.discordapp.com/app-icons/762434991303950386/eb0e25b739e4fa38c1671a3d1edcd1e0.png?size=240&keep_aspect_ratio=false';
+                const spoofGames = {
+                    'minecraft': { app_id: '1402418491272986635', name: 'Minecraft', img: 'https://cdn.discordapp.com/app-icons/1402418491272986635/166fbad351ecdd02d11a3b464748f66b.png?size=240&keep_aspect_ratio=false' },
+                    'genshin': { app_id: '762434991303950386', name: 'Genshin Impact', img: 'https://cdn.discordapp.com/app-icons/762434991303950386/eb0e25b739e4fa38c1671a3d1edcd1e0.png?size=240&keep_aspect_ratio=false' },
+                    'wuthering_waves': { app_id: '1247227126416146462', name: 'Wuthering Waves', img: 'https://cdn.discordapp.com/app-icons/1247227126416146462/c7bb04bdddaa82cf045b02df7168365e.png?size=240&keep_aspect_ratio=false' },
+                    'forza_horizon_5': { app_id: '905961880789590076', name: 'Forza Horizon 5', img: 'https://cdn.discordapp.com/app-icons/905961880789590076/229e83c3817d45ecabdaa2f343eadd34.png?size=240&keep_aspect_ratio=false' },
+                    'arknights_endfield': { app_id: '1461154307171811401', name: 'Arknights:Endfield', img: 'https://cdn.discordapp.com/app-icons/1461154307171811401/a1c43f46f274856e6fb9edc8afda149d.png?size=240&keep_aspect_ratio=false' },
+                    'valorant': { app_id: '700136079562375258', name: 'Valorant', img: 'https://cdn.discordapp.com/app-icons/700136079562375258/e55fc8259df1548328f977d302779ab7.png?size=240&keep_aspect_ratio=false' },
+                    'gta5': { app_id: '1402418714716143646', name: 'GTA5', img: 'https://cdn.discordapp.com/app-icons/1402418714716143646/b77111108195cd5e4dd2011dd39bf67d.png?size=240&keep_aspect_ratio=false' },
+                    'vrchat': { app_id: '398632010442211348', name: 'VRChat', img: 'https://cdn.discordapp.com/app-icons/398632010442211348/5881acfa9405ee69158591ec1a791c74.png?size=240&keep_aspect_ratio=false' },
+                    'cs2': { app_id: '1158877933042143272', name: 'Counter-Strike 2', img: 'https://cdn.discordapp.com/app-icons/1158877933042143272/558f5a26ecb3b17c3dea3d15c1df537a.png?size=80&keep_aspect_ratio=false' }
+                };
+
+                if (data.selectedGame && spoofGames[data.selectedGame]) {
+                    const gameInfo = spoofGames[data.selectedGame];
+                    rpcActivity.application_id = gameInfo.app_id;
+                    rpcActivity.name = gameInfo.name;
+                    rpcActivity.assets.large_image = gameInfo.img;
                 }
             } else if (data.spoofEnabled) {
                 if (data.spoofType === 'crunchyroll') {
