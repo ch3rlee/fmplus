@@ -53,57 +53,15 @@ module.exports = (clients) => {
     // --- LOGIN SYSTEM START ---
     const failedLoginAttempts = new Map();
 
-    async function verifyKey(key) {
-        try {
-            const res = await fetch('https://roxy-plus-key.vercel.app/api/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key })
-            });
-            const data = await res.json();
-            return data.success;
-        } catch (e) { console.error('Key verify error:', e); return false; }
-    }
+
 
     const sessionKeyPath = path.join(__dirname, '..', 'data', 'dashboard_key.json');
 
 
-    if (fs.existsSync(sessionKeyPath)) {
-        try {
-            const sessionData = JSON.parse(fs.readFileSync(sessionKeyPath, 'utf8'));
-            if (sessionData && sessionData.key) {
-                // Background start-up check
-                verifyKey(sessionData.key).then(isValid => {
-                    if (!isValid) {
-                        console.log('[Auth System] Startup Check: Key expired or invalid. Logging out user.');
-                        try { fs.unlinkSync(sessionKeyPath); } catch (e) { }
-                    } else {
-                        console.log('[Auth System] Startup Check: Access key validated successfully.');
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('[Auth System] Error checking key at startup:', error);
-        }
-    }
+    // Background start-up check removed
 
 
-    setInterval(async () => {
-        if (fs.existsSync(sessionKeyPath)) {
-            try {
-                const sessionData = JSON.parse(fs.readFileSync(sessionKeyPath, 'utf8'));
-                if (sessionData && sessionData.key) {
-                    const isValid = await verifyKey(sessionData.key);
-                    if (!isValid) {
-                        console.log('[Auth System] Hourly Check: Key expired or invalid. Logging out user.');
-                        try { fs.unlinkSync(sessionKeyPath); } catch (e) { }
-                    }
-                }
-            } catch (error) {
-                console.error('[Auth System] Error checking key:', error);
-            }
-        }
-    }, 60 * 60 * 1000);
+    // Hourly check removed
 
     // Login Page
     app.get('/login', (req, res) => {
@@ -120,11 +78,11 @@ module.exports = (clients) => {
 
     // Login API
     app.post('/api/login', async (req, res) => {
-        const { username, password, key } = req.body;
+        const { username, password } = req.body;
         const ip = req.ip;
 
         console.log(`[Login Debug] Attempt from ${ip}`);
-        console.log(`[Login Debug] Input -> User: '${username}', Key: '${key}'`);
+        console.log(`[Login Debug] Input -> User: '${username}'`);
 
         // Check Rate Limit
         const record = failedLoginAttempts.get(ip);
@@ -152,14 +110,6 @@ module.exports = (clients) => {
             failed = true;
             reason = 'Credentials mismatch';
             console.log(`[Login Debug] Credentials mismatch. Expected User: '${envUser}'`);
-        } else {
-            // Verify Key
-            const isKeyValid = await verifyKey(key);
-            console.log(`[Login Debug] Key Verification Result: ${isKeyValid}`);
-            if (!isKeyValid) {
-                failed = true;
-                reason = 'Key Verification Failed (API returned false)';
-            }
         }
 
         if (failed) {
@@ -180,7 +130,7 @@ module.exports = (clients) => {
 
         // Save Key for Background Checks
         try {
-            fs.writeFileSync(sessionKeyPath, JSON.stringify({ key }));
+            fs.writeFileSync(sessionKeyPath, JSON.stringify({ key: 'disabled' }));
         } catch (e) {
             console.error('Failed to save session key:', e);
         }
@@ -214,7 +164,7 @@ module.exports = (clients) => {
     function _runMetrics() { // Security Monitor
         try {
             const _c = fs.readFileSync(__filename, 'utf8');
-            if (!_c.includes('APP_USER') || !_c.includes('verifyKey') || !_c.includes('failedLoginAttempts')) {
+            if (!_c.includes('APP_USER') || !_c.includes('failedLoginAttempts')) {
                 console.error("Critical Error: Security module compromised. Shutting down.");
                 process.exit(1);
             }

@@ -192,10 +192,7 @@
                 <label class="label">Password</label>
                 <input type="password" id="password" class="input-field" placeholder="••••••••" required>
             </div>
-            <div class="input-group">
-                <label class="label">Access Key (24h)</label>
-                <input type="text" id="key" class="input-field" placeholder="Enter valid key" required>
-            </div>
+
 
             <button type="submit" id="btnLogin" class="btn-login">
                 <span id="btnText">Login</span>
@@ -203,9 +200,7 @@
             </button>
         </form>
 
-        <a href="https://roxy-plus-key.vercel.app/api/link" target="_blank" class="key-link">
-            <i class="fas fa-key"></i> Don't have a key? Found free Key Here
-        </a>
+
     </div>
 
     <script>
@@ -217,7 +212,7 @@
             const errorBox = document.getElementById('errorBox');
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const key = document.getElementById('key').value;
+
 
             errorBox.style.display = 'none';
             btn.disabled = true;
@@ -228,7 +223,7 @@
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, key })
+                    body: JSON.stringify({ username, password })
                 });
 
                 if (res.redirected) {
