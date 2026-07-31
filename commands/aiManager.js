@@ -124,39 +124,21 @@ async function generateReply(client, userId, userContent) {
     // Append current message
     messages.push({ role: "user", content: userContent });
 
-    let modelName = "nvidia/nemotron-3-super-120b-a12b";
-    let temp = 1;
-    let maxTokens = 16384;
-    let topP = 0.95;
-    let extraParams = {
-        reasoning_budget: 16384,
-        chat_template_kwargs: { enable_thinking: true }
-    };
-
-    if (config.modelType === "fast") {
-        temp = 1;
-        topP = 0.95;
-        extraParams = {
-            chat_template_kwargs: { enable_thinking: false }
-        };
-    }
-
     try {
-        const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        const response = await fetch('https://opencode.ai/zen/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.AI_API}`,
-                'Accept': 'text/event-stream',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: modelName,
+                model: "deepseek-v4-flash-free",
                 messages: messages,
-                temperature: temp,
-                top_p: topP,
-                max_tokens: maxTokens,
-                stream: true,
-                ...extraParams
+                temperature: 1.0,
+                top_p: 1.0,
+                max_tokens: 8192,
+                reasoning_effort: "max",
+                chat_template_kwargs: { thinking: true }
             })
         });
 
@@ -165,39 +147,10 @@ async function generateReply(client, userId, userContent) {
             return "what you mean?";
         }
 
-        let fullContent = "";
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let buffer = "";
+        const data = await response.json();
+        let fullContent = data.choices?.[0]?.message?.content || "";
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-
-            let newlineIndex;
-            while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-                const line = buffer.slice(0, newlineIndex).trim();
-                buffer = buffer.slice(newlineIndex + 1);
-
-                if (line.startsWith('data: ')) {
-                    const dataStr = line.slice(6).trim();
-                    if (dataStr === '[DONE]') continue;
-                    try {
-                        const data = JSON.parse(dataStr);
-                        const delta = data.choices?.[0]?.delta;
-                        if (delta?.content) {
-                            fullContent += delta.content;
-                        }
-                    } catch (e) {
-                    }
-                } else if (line.startsWith('event: error')) {
-                    console.error("[AI] Nvidia Stream Error Event Received.");
-                }
-            }
-        }
-
-        console.log(`\n[AI] Reply complete (Model: ${config.modelType}).`);
+        console.log(`\n[AI] Reply complete (Model: Deepseek).`);
 
         // Strip out <think> blocks if the model returns them in the main content chunk
         fullContent = fullContent.replace(/<think>[\s\S]*?(?:<\/think>|$)\s*/gi, '');

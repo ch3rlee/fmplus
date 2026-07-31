@@ -382,13 +382,7 @@
         <div class="section-card">
             <div class="section-title">Personality & Rules</div>
             <div class="form-grid">
-                <div class="input-group">
-                    <label class="input-label">AI Model</label>
-                    <select id="modelType" class="input-field">
-                        <option value="slow">Slow (Thinking) - Best Quality</option>
-                        <option value="fast">Fast (Instruct) - High Speed</option>
-                    </select>
-                </div>
+
                 <div class="input-group">
                     <label class="input-label">AI Name</label>
                     <input type="text" id="aiName" class="input-field" placeholder="e.g. Roxy">
@@ -597,7 +591,7 @@
                 document.getElementById('disablePing').checked = currentData.disablePing || false;
 
                 // Personality
-                document.getElementById('modelType').value = currentData.modelType || 'slow';
+
                 document.getElementById('aiName').value = currentData.aiName || '';
                 document.getElementById('backstory').value = currentData.backstory || '';
                 document.getElementById('personality').value = currentData.personality || '';
@@ -843,7 +837,7 @@
                 btn.style.background = "#2ecc71";
                 btn.disabled = true;
 
-                currentData.modelType = document.getElementById('modelType').value;
+
                 currentData.aiName = document.getElementById('aiName').value;
                 currentData.backstory = document.getElementById('backstory').value;
                 currentData.personality = document.getElementById('personality').value;
@@ -879,7 +873,7 @@
                     backstory: currentData.backstory,
                     personality: currentData.personality,
                     rules: currentData.rules,
-                    modelType: currentData.modelType,
+
                     bannedWords: currentData.bannedWords,
                     disablePing: currentData.disablePing,
                     blockedUsers: currentData.blockedUsers
