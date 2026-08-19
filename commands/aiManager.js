@@ -1,4 +1,4 @@
-const OpenAI = require('openai');
+
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
@@ -11,11 +11,7 @@ function getPaths(client) {
     };
 }
 
-// Initialize API
-const openai = new OpenAI({
-    apiKey: process.env.AI_API,
-    baseURL: 'https://integrate.api.nvidia.com/v1',
-});
+
 
 // Default Config
 const DEFAULT_CONFIG = {
